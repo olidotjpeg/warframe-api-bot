@@ -41,6 +41,30 @@ type DarvoDeals struct {
 	Id            string `json:"id"`
 }
 
+type SortieState struct {
+	Id string
+	Activation string
+	Expiry string
+	StartString string
+	Active bool
+	RewardPool string
+	Variants []Variant
+	Boss string
+	Faction string
+	FactionKey string
+	Expired bool
+	Eta string
+}
+
+type Variant struct {
+	Node string
+	Boss string
+	MissionType string
+	Planet string
+	Modifier string
+	ModifierDescription string
+}
+
 type VoidItem struct {
 	Item    string
 	Ducat   int
@@ -80,8 +104,6 @@ func init() {
 }
 
 var (
-	integerOptionMinValue = 1.0
-
 	commands = []*discordgo.ApplicationCommand{
 		{
 			Name: "arbitration",
@@ -95,9 +117,9 @@ var (
 			Description: "Get the active Void Trader",
 		},
 		{
-			Name:        "darvo-deals",
-			Description: "Lists all of Darvos Deals",
-		},
+			Name: "sortie",
+			Description: "Get the current Sortie State",
+		}
 	}
 
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -118,13 +140,13 @@ Enemy Type %s
 				},
 			})
 		},
-		"darvo-deals": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			darvoContent := getDarvoDeals()
+		"sortie": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			sortieState := getSortieState()
 
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "Today Darvo is selling the following item: " + darvoContent.Item + " at a total amount of " + strconv.Itoa(darvoContent.Total) + " at the SalePrice of " + strconv.Itoa(darvoContent.SalePrice) + " Original Price was " + strconv.Itoa(darvoContent.OriginalPrice) + " his current discount is valued at " + strconv.Itoa(darvoContent.Discount),
+					Content: "asd",
 				},
 			})
 		},
@@ -134,7 +156,7 @@ Enemy Type %s
 			var voidString string
 
 			if !voidTraderState.Active {
-				voidString = fmt.Sprintf("Hello Operator, the Void Trader isn't active, please come back in %s", voidTraderState.StartString)
+				voidString = fmt.Sprintf("Hello Operator, the Void Trader isn't active, please come back in approximately %s", voidTraderState.StartString)
 			}
 
 			if voidTraderState.Active {
@@ -164,8 +186,8 @@ func init() {
 	})
 }
 
-func getDarvoDeals() DarvoDeals {
-	response, err := http.Get("https://api.warframestat.us/pc/dailyDeals/")
+func getSortieState() SortieState {
+	response, err := http.Get("https://api.warframestat.us/pc/sortie/")
 
 	if err != nil {
 		fmt.Print(err.Error())
@@ -177,16 +199,10 @@ func getDarvoDeals() DarvoDeals {
 		log.Fatal(err)
 	}
 
-	var responseObject []DarvoDeals
+	var responseObject SortieState
 	json.Unmarshal(responseData, &responseObject)
 
-	fmt.Print(len(responseObject))
-
-	// if len(responseObject) == 1 {
-	// 	return responseObject
-	// }
-
-	return responseObject[0]
+	return responseObject
 }
 
 func getVoidTraderState() VoidTrader {
