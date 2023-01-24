@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -42,26 +41,26 @@ type DarvoDeals struct {
 }
 
 type SortieState struct {
-	Id string
-	Activation string
-	Expiry string
+	Id          string
+	Activation  string
+	Expiry      string
 	StartString string
-	Active bool
-	RewardPool string
-	Variants []Variant
-	Boss string
-	Faction string
-	FactionKey string
-	Expired bool
-	Eta string
+	Active      bool
+	RewardPool  string
+	Variants    []Variant
+	Boss        string
+	Faction     string
+	FactionKey  string
+	Expired     bool
+	Eta         string
 }
 
 type Variant struct {
-	Node string
-	Boss string
-	MissionType string
-	Planet string
-	Modifier string
+	Node                string
+	Boss                string
+	MissionType         string
+	Planet              string
+	Modifier            string
 	ModifierDescription string
 }
 
@@ -117,9 +116,9 @@ var (
 			Description: "Get the active Void Trader",
 		},
 		{
-			Name: "sortie",
+			Name:        "sortie",
 			Description: "Get the current Sortie State",
-		}
+		},
 	}
 
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -143,10 +142,16 @@ Enemy Type %s
 		"sortie": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			sortieState := getSortieState()
 
+			sortieString := "Hello Operator, Ordis have compiled a list of the current Sortie tasks"
+
+			for index, variant := range sortieState.Variants {
+				sortieString = fmt.Sprintf("%s \n Mission #%d is on %s(%s) - the type is %s", sortieString, index+1, variant.Node, variant.Planet, variant.MissionType)
+			}
+
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "asd",
+					Content: sortieString,
 				},
 			})
 		},
@@ -187,7 +192,7 @@ func init() {
 }
 
 func getSortieState() SortieState {
-	response, err := http.Get("https://api.warframestat.us/pc/sortie/")
+	response, err := http.Get("https://api.warframestat.us/pc/sortie?language=en")
 
 	if err != nil {
 		fmt.Print(err.Error())
