@@ -1,87 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/bwmarrin/discordgo"
 )
-
-type Arbitration struct {
-	Id          string `json:"id"`
-	Activation  string `json:"activation"`
-	Expiry      string `json:"expiry"`
-	StartString string `json:"startString"`
-	Active      bool   `json:"active"`
-	Node        string `json:"node"`
-	Enemy       string `json:"enemy"`
-	EnemyKey    string `json:"enemyKey"`
-	Type        string `json:"type"`
-	TypeKey     string `json:"typeKey"`
-	Archwing    bool   `json:"archwing"`
-	Sharkwing   bool   `json:"sharkwing"`
-}
-
-type DarvoDeals struct {
-	Sold          int    `json:"sold"`
-	Item          string `json:"item"`
-	Total         int    `json:"total"`
-	Eta           string `json:"eta"`
-	OriginalPrice int    `json:"originalPrice"`
-	SalePrice     int    `json:"salePrice"`
-	Discount      int    `json:"discount"`
-	Expiry        string `json:"expiry"`
-	Id            string `json:"id"`
-}
-
-type SortieState struct {
-	Id          string
-	Activation  string
-	Expiry      string
-	StartString string
-	Active      bool
-	RewardPool  string
-	Variants    []Variant
-	Boss        string
-	Faction     string
-	FactionKey  string
-	Expired     bool
-	Eta         string
-}
-
-type Variant struct {
-	Node                string
-	Boss                string
-	MissionType         string
-	Planet              string
-	Modifier            string
-	ModifierDescription string
-}
-
-type VoidItem struct {
-	Item    string
-	Ducat   int
-	Credits int
-}
-
-type VoidTrader struct {
-	Id          string
-	Activation  string
-	StartString string
-	Expiry      string
-	Active      bool
-	Character   string
-	Location    string
-	Inventory   []VoidItem
-	PsId        string
-	EndString   string
-}
 
 // Bot parameters
 var (
@@ -189,63 +116,6 @@ func init() {
 			h(s, i)
 		}
 	})
-}
-
-func getSortieState() SortieState {
-	response, err := http.Get("https://api.warframestat.us/pc/sortie?language=en")
-
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
-	}
-
-	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var responseObject SortieState
-	json.Unmarshal(responseData, &responseObject)
-
-	return responseObject
-}
-
-func getVoidTraderState() VoidTrader {
-	response, err := http.Get("https://api.warframestat.us/pc/voidTrader/")
-
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
-	}
-
-	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var responseObject VoidTrader
-	json.Unmarshal(responseData, &responseObject)
-
-	return responseObject
-}
-
-func getArbitration() Arbitration {
-	response, err := http.Get("https://api.warframestat.us/pc/arbitration/")
-
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
-	}
-
-	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var responseObject Arbitration
-	json.Unmarshal(responseData, &responseObject)
-
-	return responseObject
 }
 
 func main() {
