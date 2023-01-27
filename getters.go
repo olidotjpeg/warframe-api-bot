@@ -41,8 +41,11 @@ func getVoidTraderState() VoidTrader {
 		log.Fatal(err)
 	}
 
-	var responseObject VoidTrader
-	json.Unmarshal(responseData, &responseObject)
+	responseObject := VoidTrader{}
+	_ = json.Unmarshal(responseData, &responseObject)
+	file, err := json.Marshal(responseObject)
+
+	ioutil.WriteFile("voidInventory.json", file, 0644)
 
 	return responseObject
 }
@@ -83,4 +86,48 @@ func getWarframeDropData(query string) []WarframeData {
 	json.Unmarshal(responseData, &responseObject)
 
 	return responseObject
+}
+
+func getItemDetailed(query string) WarframeItem {
+	response, err := http.Get("https://api.warframestat.us/items/" + query)
+
+	if err != nil {
+		fmt.Print(err.Error())
+		os.Exit(1)
+	}
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var responseObject WarframeItem
+	json.Unmarshal(responseData, &responseObject)
+
+	return responseObject
+}
+
+func getVoidItemsDetailed() []WarframeItem {
+	content, _ := ioutil.ReadFile("voidInventory.json")
+	activeInventory := []WarframeItem{}
+	mods := []WarframeItem{}
+
+	voidInventory := VoidTrader{}
+	json.Unmarshal(content, &voidInventory)
+
+	for _, item := range voidInventory.Inventory {
+		newItem := getItemDetailed(item.Item)
+		if newItem.Code != 404 {
+			activeInventory = append(activeInventory, newItem)
+		}
+
+	}
+
+	for _, newItem := range activeInventory {
+		if newItem.Category == "Mods" {
+			mods = append(mods, newItem)
+		}
+	}
+
+	return mods
 }

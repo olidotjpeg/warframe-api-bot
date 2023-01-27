@@ -72,7 +72,55 @@ type VoidTrader struct {
 	Active      bool
 	Character   string
 	Location    string
-	Inventory   []VoidItem
+	Inventory   []VoidItem `json:"inventory"`
 	PsId        string
 	EndString   string
+}
+
+type WarframeItem struct {
+	Name               string          `json:"name"`
+	UniqueName         string          `json:"uniqueName"`
+	Description        string          `json:"description"`
+	Type               string          `json:"type"`
+	Tradable           bool            `json:"tradable"`
+	Category           string          `json:"category"`
+	ProductCategory    string          `json:"productCategory"`
+	Patchlogs          []PatchLog      `json:"patchLogs"`
+	Component          []ItemComponent `json:"component"`
+	Introduced         []Introduced    `json:"introduced"`
+	LevelStats         []LevelStat     `json:"levelStats"`
+	EstimatedVaultDate string          `json:"estimatedVaultDate"`
+	Error              string          `json:"error"`
+	Code               int             `json:"code"`
+}
+
+type LevelStat struct {
+	Stats []string `json:"stats"`
+}
+
+type PatchLog struct {
+	Name      string
+	Date      string
+	Url       string
+	Additions string
+	Changes   string
+	Fixes     string
+}
+
+type ItemComponent struct {
+	Name            string
+	UniqueName      string
+	Description     string
+	Type            string
+	Tradable        bool
+	Category        string
+	ProductCategory string
+}
+
+type Introduced struct {
+	Name    string
+	Url     string
+	Aliases []string
+	Parent  string
+	Date    string
 }

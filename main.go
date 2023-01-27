@@ -84,6 +84,7 @@ Enemy Type %s
 		},
 		"void-trader": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			voidTraderState := getVoidTraderState()
+			voidItems := getVoidItemsDetailed()
 
 			var voidString string
 
@@ -95,8 +96,8 @@ Enemy Type %s
 				voidString = `Hello Operator, the Void trader is selling the following items
 				`
 
-				for _, item := range voidTraderState.Inventory {
-					voidString = fmt.Sprintf("%s \n %s : Ducats %d - Credits %d", voidString, item.Item, item.Ducats, item.Credits)
+				for _, item := range voidItems {
+					voidString = fmt.Sprintf("%s \n %s : %s - %s", voidString, item.Name, item.LevelStats[0], item.Category)
 				}
 			}
 
