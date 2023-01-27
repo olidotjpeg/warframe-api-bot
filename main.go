@@ -96,7 +96,7 @@ Enemy Type %s
 				`
 
 				for _, item := range voidTraderState.Inventory {
-					voidString = fmt.Sprintf("%s \n %s", voidString, item.Item)
+					voidString = fmt.Sprintf("%s \n %s : Ducats %d - Credits %d", voidString, item.Item, item.Ducats, item.Credits)
 				}
 			}
 

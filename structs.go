@@ -60,7 +60,7 @@ type Variant struct {
 
 type VoidItem struct {
 	Item    string
-	Ducat   int
+	Ducats  int
 	Credits int
 }
 
